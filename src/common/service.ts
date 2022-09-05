@@ -5,7 +5,7 @@ import { IWishObject } from "../pages/MyWish";
 import { IWishesObject } from "../pages/Wishes";
 import { appendParams2Path } from "./global";
 
-const BASEURL = "http://127.0.0.1:4523/m1/1379753-0-default";
+const BASEURL = "http://127.0.0.1:4523/mock/1379753";
 
 interface IGlobalResponse<T> {
   data: T;

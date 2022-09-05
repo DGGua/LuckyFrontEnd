@@ -52,6 +52,7 @@ export interface IWishItemProps {
 }
 
 const WishItem = (props: IWishItemProps) => {
+  console.log(props.wish.wish);
   // console.log(props.wishtype);
   // console.log(props.wish.wish.desire)
   return (
@@ -135,7 +136,7 @@ export default function Wishes() {
   const [display, setDisplay] = useState(false); // 弹出确认框
   const [light, setLight] = useState(false);
   const [lightBtn, setLightBtn] = useState(true); // 点亮按钮是否存在
-  const [wishes, setWishes] = useState<Array<IWishInfo_withName>>(WISHES_INIT);
+  const [wishes, setWishes] = useState<IWishInfo_withName[]>(WISHES_INIT);
   const [name, setName] = useState("");
   const [number, setNumber] = useState("");
   const [tel, setTel] = useState("");
@@ -144,12 +145,8 @@ export default function Wishes() {
   const [testFlag, setTestFlag] = useState("1");
   const refreshWishes = () => {
     Service.getWishByCategories_2(category.toString()).then((res) => {
-      let wishes = res.data.data;
-      console.log("0");
-      // console.log(res.data.data);
-      // console.log(wishes[0])
-      if (res.data.data.length === 0) {
-        console.log(res.data.data.length);
+      let wi = res.data.data;
+      if (wi.length === 0) {
         setLightBtn(false);
         let wish: IWishInfo_withName = {
           wish: {
@@ -166,30 +163,27 @@ export default function Wishes() {
           },
           wishMan: "",
         };
-        wishes.push(wish);
+        wi.push(wish);
       } else {
-        console.log("1");
-        wishes = res.data.data;
         setLightBtn(true);
-        while (wishes.length < 3) {
-          wishes = wishes.concat(wishes);
-        }
-        setWishes(wishes);
-        console.log("2");
-
       }
+      while (wi.length < 3) {
+        wi = [...wi, ...wi];
+      }
+      console.log("triggers");
+      console.log(wi);
+      setWishes(wi);
 
-      console.log(wishes);
       setTestFlag("2");
     });
-    setTimeout(()=>{console.log(wishes)},10000)//延时打印外部常量wishes，发现177行set赋值失败
   };
   // 获取愿望
-  useEffect(refreshWishes, [category, lightBtn, wishes]);
+  useEffect(refreshWishes, [category, lightBtn]);
   useEffect(() => {
-    if (testFlag === "2") console.log(wishes[0].wish.desire + "123");
-  }, [wishes, testFlag]);
-
+    console.log(1);
+    console.log(wishes);
+    console.log(1);
+  }, [wishes]);
   // console.log(wishes[0].wish+"123")
 
   useEffect(() => {
@@ -360,52 +354,22 @@ export default function Wishes() {
         查看我的点亮
       </ButtonS>
       <div className="wishes">
-        <WishItem
-          className="wish-img"
-          wish={wishes[0]}
-          setStyleID={0}
-          onTouchStart={onTouchStart}
-          onTouchMove={onTouchMove}
-          onTouchEnd={onTouchEnd}
-          myStyle={{
-            left: `${move.img1}vw`,
-            transition: update ? "all 0.2s" : "none",
-            zIndex: 101,
-          }}
-          wishtype={state}
-        />
-        <WishItem
-          className="wish-img"
-          wish={wishes[1]}
-          setStyleID={1}
-          myStyle={{
-            left: `${move.img2}vw`,
-            transition: update ? "all 0.2s" : "none",
-            zIndex: 100,
-          }}
-          wishtype={state}
-        />
-        <WishItem
-          className="wish-img"
-          wish={wishes[2]}
-          setStyleID={2}
-          myStyle={{
-            left: `${move.img3}vw`,
-            transition: update ? "all 0.2s" : "none",
-            zIndex: 99,
-          }}
-          wishtype={state}
-        />
-        <WishItem
-          className="img1 wish-img"
-          wish={wishes[2]}
-          setStyleID={2}
-          myStyle={{
-            left: `20vw`,
-            zIndex: 98,
-          }}
-          wishtype={state}
-        />
+        {wishes.map((wish, index) => (
+          <WishItem
+            className="wish-img"
+            wish={wish}
+            setStyleID={0}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+            myStyle={{
+              left: `${move.img1}vw`,
+              transition: update ? "all 0.2s" : "none",
+              zIndex: 101,
+            }}
+            wishtype={state}
+          />
+        ))}
       </div>
       <ButtonS
         style={{
